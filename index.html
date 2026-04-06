@@ -37,27 +37,27 @@ select { width:100%; margin-top:6px; padding:6px; }
   <strong>Select OEM</strong>
   <select id="oemSelect" onchange="updateMap()">
     <option value="Allison Transmission">Allison Transmission</option>
+    <option value="mtu">mtu</option>
+    <option value="Volvo Penta">Volvo Penta</option>
+    <option value="Deutz">Deutz</option>
+    <option value="John Deere">John Deere</option>
+    <option value="Yanmar">Yanmar</option>
+    <option value="Northern Lights">Northern Lights</option>
+    <option value="Workhorse">Workhorse</option>
+    <option value="Daimler Coach North America">Daimler Coach North America</option>
     <option value="Blue Star">Blue Star</option>
     <option value="Briggs &amp; Stratton">Briggs &amp; Stratton</option>
-    <option value="Bus Climate Control">Bus Climate Control</option>
-    <option value="Daimler Coach North America">Daimler Coach North America</option>
-    <option value="Deutz">Deutz</option>
-    <option value="HIAB-WALTCO Liftgate">HIAB-WALTCO Liftgate</option>
-    <option value="John Deere">John Deere</option>
     <option value="Kohler">Kohler</option>
-    <option value="Northern Lights">Northern Lights</option>
     <option value="Red Dot">Red Dot</option>
-    <option value="Volvo Penta">Volvo Penta</option>
-    <option value="Workhorse">Workhorse</option>
-    <option value="Yanmar">Yanmar</option>
-    <option value="mtu">mtu</option>
+    <option value="HIAB-WALTCO Liftgate">HIAB-WALTCO Liftgate</option>
+    <option value="Bus Climate Control">Bus Climate Control</option>
   </select>
 
   <div class="legend">
-    <div><span style="display:inline-block;width:10px;height:10px;background:white;border:1px solid black;border-radius:50%;margin-right:6px;vertical-align:middle;"></span>Dealer</div>
-    <div><span style="display:inline-block;width:10px;height:10px;background:white;border:1px solid black;border-radius:0;margin-right:6px;vertical-align:middle;"></span>Distributor</div>
-    <div><span style="display:inline-block;width:10px;height:10px;background:white;border:1px solid black;border-radius:0;outline:2px solid black;outline-offset:2px;margin-right:6px;vertical-align:middle;"></span>Dealer/Distributor</div>
-    <div><span style="display:inline-block;width:10px;height:10px;background:#aaa;border:1px solid black;border-radius:50%;margin-right:6px;vertical-align:middle;"></span>Service Provider / Other</div>
+    <div><span class="dot" style="background:white; border:1px solid black"></span>Distributor</div>
+    <div><span class="dot hollow"></span>Dealer</div>
+    <div><span class="dot" style="background:white; border:2px solid black"></span>Dealer/Distributor</div>
+    <div><span class="dot" style="background:#aaa; border:1px solid black"></span>Service Provider / Other</div>
   </div>
 </div>
 
@@ -406,21 +406,20 @@ function drawMarkers(selectedOEM) {
     const c = getCityCoords(d.city, d.state);
     if (!c) return;
 
-    let iconHtml;
-    if (d.role === "Dealer") {
-      iconHtml = `<div style="width:12px;height:12px;background:white;border:1.5px solid #555;border-radius:50%;box-sizing:border-box;"></div>`;
-    } else if (d.role === "Distributor") {
-      iconHtml = `<div style="width:12px;height:12px;background:white;border:1.5px solid #555;border-radius:0;box-sizing:border-box;"></div>`;
+    let style;
+    if (d.role === "Distributor") {
+      style = { fillColor:"white", fillOpacity:1, color:"white", weight:1 };
+    } else if (d.role === "Dealer") {
+      style = { fillColor:"transparent", fillOpacity:0, color:"white", weight:2 };
     } else if (d.role === "Dealer/Distributor") {
-      iconHtml = `<div style="width:12px;height:12px;background:white;border:1.5px solid #555;border-radius:0;outline:2px solid #555;outline-offset:2px;box-sizing:border-box;"></div>`;
+      style = { fillColor:"white", fillOpacity:1, color:"white", weight:2 };
     } else {
       // Service Provider, Wholesale Partner, etc.
-      iconHtml = `<div style="width:12px;height:12px;background:#aaa;border:1.5px solid #555;border-radius:50%;box-sizing:border-box;"></div>`;
+      style = { fillColor:"#aaaaaa", fillOpacity:0.9, color:"white", weight:1 };
     }
 
-    const icon = L.divIcon({ html: iconHtml, className: '', iconAnchor: [6, 6] });
     const countyLabel = d.county ? `${d.county} County<br>` : "";
-    const marker = L.marker(c, { icon }).addTo(map);
+    const marker = L.circleMarker(c, { radius:6, ...style }).addTo(map);
     marker.bindTooltip(`${d.city}, ${d.stateLabel}<br>${countyLabel}${d.oem}<br>${d.role}`);
     markers.push(marker);
   });
